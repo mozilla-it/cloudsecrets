@@ -3,7 +3,7 @@ import setuptools
 from setuptools import setup, find_packages
 
 setup(
-    name="mozilla-secrets",
+    name="mozsecrets",
     version="0.0.1",
     description="Python tool for accessing mozilla cloud secrets",
     python_requires=">=3.4",
