@@ -4,7 +4,7 @@ import json
 import os
 import logging
 
-from mozsecrets import SecretsBase
+from cloudsecrets import SecretsBase
 
 class Secrets(SecretsBase):
     """

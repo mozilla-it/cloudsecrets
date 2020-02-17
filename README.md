@@ -1,8 +1,8 @@
-# mozsecrets
+# cloudsecrets
 
-mozsecrets is a thin layer for cloud vendor secrets managers which asserts some consistency between various solutions and makes implement multi-cloud friendly code easy.
+cloudsecrets is a thin layer for cloud vendor secrets managers which asserts some consistency between various solutions and makes implement multi-cloud friendly code easy.
 
-The mozsecrets library includes a cli mozilla-secrets which exposes all the features of the library.
+The cloudsecrets library includes a cli mozilla-secrets which exposes all the features of the library.
 
 Current supported platforms include GCP (secretmanager) and AWS (secrets manager).
 
@@ -10,12 +10,12 @@ Current supported platforms include GCP (secretmanager) and AWS (secrets manager
 
 From the command line:
 ```
-pip3 install git+https://github.com/mozafrank/mozsecrets.git
+pip3 install git+https://github.com/mozafrank/cloudsecrets.git
 ```
 From Pipenv:
 ```
 [packages]
-mozsecrets = { version = "*", git = "https://github.com/mozafrank/mozsecrets.git", ref = "master", editable = false }
+cloudsecrets = { version = "*", git = "https://github.com/mozafrank/cloudsecrets.git", ref = "master", editable = false }
 ```
 If you're using pipenv to generate a requirements file for pypi try this syntax:
 ```
@@ -29,7 +29,7 @@ pip3 install --upgrade --no-cache-dir .
 For AWS and GCP the library assumes you're fully authenticated and authorized for secrets management. For GCP, you will need to let the library know what project you want to use. This can be done with the PROJECT env var or by passing the `project` argument to the class.
 
 ```
->>> from mozsecrets.gcp import Secrets
+>>> from cloudsecrets.gcp import Secrets
 >>> mySecrets = Secrets("afrank-secrets")
 >>> dict(mySecrets)
 {'THIS': 'is a secret', 'ANOTHER': 'SECRET2'}
