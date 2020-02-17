@@ -54,6 +54,22 @@ WARNING:root:Warning, you are overwriting an existing key
 >>> dict(s).get('THIS')
 'is a different secret'
 ```
+Rollback to an old version, then set that version to latest
+```
+>>> dict(s)
+{'THIS': 'is a different secret', 'ANOTHER': 'SECRET2', 'another': 'secret', 'YETANOTHER': 'SECRETVALUE', 'key': 'val'}
+>>> s.version
+'8'
+>>> s.rollback()
+>>> s.version
+'7'
+>>> dict(s)
+{'THIS': 'is a different secret', 'ANOTHER': 'SECRET2', 'another': 'secret', 'YETANOTHER': 'SECRETVALUE'}
+>>> s.update()
+'projects/357203911999/secrets/afrank-secrets/versions/9'
+>>> dict(s)
+{'THIS': 'is a different secret', 'ANOTHER': 'SECRET2', 'another': 'secret', 'YETANOTHER': 'SECRETVALUE'}
+```
 
 ## How to Use the CLI
 

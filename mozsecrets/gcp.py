@@ -4,7 +4,9 @@ import json
 import os
 import logging
 
-class Secrets:
+from mozsecrets import SecretsBase
+
+class Secrets(SecretsBase):
     """
     GCP Implementation of Mozilla-IT application secrets
 
@@ -37,8 +39,8 @@ class Secrets:
     'VALUE'
     
     """
-    def __init__(self,secret,**kwargs):
-        logging.getLogger(__name__)
+    def __init__(self,secret,**kwargs) -> None:
+        super()
         self.secret = secret
 
         assert 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ, "This module requires the GOOGLE_APPLICATION_CREDENTIALS environment variable be set"
@@ -46,66 +48,65 @@ class Secrets:
         supported_project_env_vars = [ 'PROJECT', 'GOOGLE_CLOUD_PROJECT', 'GCP_PROJECT', 'GCLOUD_PROJECT' ]
 
         self.create_if_not_present = kwargs.get('create_if_not_present',True)
-        self.version = kwargs.get('version','latest')
-        self.project = kwargs.get('project',None)
+        self._version = kwargs.get('version','latest')
+        self._project = kwargs.get('project',None)
         for prj in supported_project_env_vars:
-            if self.project:
+            if self._project:
                 break
-            self.project = os.environ.get(prj,None)
+            self._project = os.environ.get(prj,None)
 
-        assert self.project, "Project must be specified"
+        assert self._project, "Project must be specified"
 
         self.client = secretmanager.SecretManagerServiceClient()
         self._secrets = {}
         self._encoded_secrets = {}
 
-        if not self._secret_exists(secret):
-            if not self.create_if_not_present:
-                raise Exception("Requested secret {} does not exist and you chose not to create it".format(secret))
-            logging.info("Creating secret resource")
-            self._create_secret_resource(secret)
+        self._load_secrets()
 
-        self.name = f"projects/{self.project}/secrets/{secret}/versions/{self.version}"
-        if self._secret_version_exists(self.name):
-            x = self.client.access_secret_version(self.name).payload.data.decode("utf-8")
-            self._encoded_secrets = json.loads(x)
-            for k,v in self._encoded_secrets.items():
-                self._secrets[k] = base64.b64decode(v).decode('ascii')
     @property
-    def secrets(self) -> dict:
-        return self._secrets
-    def __iter__(self):
-        return iter(self._secrets.items())
-    def _secret_exists(self,name):
-        logging.info("checking if secret exists")
+    def _secret_exists(self) -> bool:
         try:
-            self.client.get_secret(self.client.secret_path(self.project, name))
+            self.client.get_secret(self.client.secret_path(self.project, self.secret))
             return True
         except:
             return False
-    def _secret_version_exists(self,path):
+    def _load_secrets(self) -> None:
+        """
+        Load upstream secret resource, replacing local secrets
+        """
+        secret_path = f"projects/{self._project}/secrets/{self.secret}/versions/{self._version}"
+        secrets = {}
+        if self.create_if_not_present and not self._secret_exists:
+            self.create_secret_resource()
+
         try:
-            x = self.client.access_secret_version(path)
-            return True
+            x = self.client.access_secret_version(secret_path)
         except:
-            return False
-    def _create_secret_resource(self,name):
+            self._encoded_secrets = {}
+            self._secrets = {}
+            return
+        self._version = x.name.split('/')[-1]
+        payload = x.payload.data.decode("utf-8")
+        self._encoded_secrets = json.loads(payload)
+        for k,v in self._encoded_secrets.items():
+            secrets[k] = base64.b64decode(v).decode('ascii')
+        self._secrets = secrets
+
+    def _create_secret_resource(self) -> None:
+        """
+        Create the secret resource which will hold versions of secrets. A secret resource on its own has no secret data.
+        """
         try:
-            self.client.create_secret(self.client.project_path(self.project), name, { 'replication': { 'automatic': {}}})
+            self.client.create_secret(self.client.project_path(self.project), self.secret, { 'replication': { 'automatic': {}}})
         except Exception as e:
             logging.error("Failed to create secret resource: {}".format(e))
-    def set(self,key,val):
+            raise
+
+    def update(self) -> None:
         """
-        The key/val here aren't the key/val of secretmanager, they're a key/val within a given secret val.
+        Commit the current state of self._secrets to a new secret version
         """
-        if type(val) != str:
-            logging.warn("Warning, value is not a string so serializing as json")
-            val = json.dumps(val)
-        if key in self._secrets:
-            logging.warn("Warning, you are overwriting an existing key")
-        self._secrets[key] = val
-        self._encoded_secrets[key] = base64.b64encode(bytes(val,'utf-8')).decode('ascii')
         j_blob = json.dumps(self._encoded_secrets).encode('UTF-8')
         resp = self.client.add_secret_version(self.client.secret_path(self.project, self.secret), {'data': j_blob})
-        #version = resp.name.split('/')[-1]
-        return resp.name
+        self._version = resp.name.split('/')[-1]
+
