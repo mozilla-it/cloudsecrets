@@ -39,6 +39,21 @@ For AWS and GCP the library assumes you're fully authenticated and authorized fo
 {'THIS': 'is a secret', 'ANOTHER': 'SECRET2', 'another': 'secret'}
 
 ```
+Switching between versions
+```
+>>> s = Secrets("afrank-secrets",version="latest",project="dp2-stage")
+>>> dict(s)
+{'THIS': 'is a secret', 'ANOTHER': 'SECRET2', 'another': 'secret', 'YETANOTHER': 'SECRETVALUE'}
+>>> s.set('THIS','is a different secret')
+WARNING:root:Warning, you are overwriting an existing key
+'projects/357203911999/secrets/afrank-secrets/versions/7'
+>>> s = Secrets("afrank-secrets",version=6,project="dp2-stage")
+>>> dict(s).get('THIS')
+'is a secret'
+>>> s = Secrets("afrank-secrets",version="latest",project="dp2-stage")
+>>> dict(s).get('THIS')
+'is a different secret'
+```
 
 ## How to Use the CLI
 

@@ -4,35 +4,56 @@ import json
 import os
 import logging
 
-"""
-Anatomy of a mozsecret:
-
-Secrets are stored upstream in key/value pairs.
-
-The key consists of the project, the secret version and secret name unique to that project.
-The value contains a json blob.
-  * When the json blob in the value is deserialized it's a dictionary consisting of unique string keys with base64-encoded values.
-  * What's contained within the base64-encoded value is at the discretion of the developer.
-
-"""
-
 class Secrets:
     """
     GCP Implementation of Mozilla-IT application secrets
+
+    A secret is a json dictionary of ascii:base64 key:value pairs.
+
+    Upstream Resource:
+    projects/{project}/secrets/{secret}/versions/{version}
+
+    By default, "latest" version is used.
+
+    Value (json string):
+    {
+      "MYSECRET": "VkFMVUU=",
+      "creds.json": "ewogICAgImJsb2IiOiAiaGVyZSBpcyBzb21lIHN0dWZmIgp9Cg=="
+    }
+    
+    Project must be specified, either as a keyword argument or env var.
+    Supported env vars are PROJECT, GOOGLE_CLOUD_PROJECT, GCP_PROJECT, GCLOUD_PROJECT
+    >>> os.environ['PROJECT'] = "my-project"
+
+    If a secret is specified which does not exist, one will be created unless
+    create_if_not_present is set to False
+    >>> s = Secrets("my-secrets")
+
+    >>> s = Secrets("non-existent-secrets",create_if_not_present=False)
+    Exception: Requested secret non-existent-secrets does not exist and you chose not to create it
+
+    The Secrets class supports being called as a dictionary
+    >>> dict(s).get("MYSECRET")
+    'VALUE'
+    
     """
     def __init__(self,secret,**kwargs):
         logging.getLogger(__name__)
-        self.version = "latest"
-        self.create_if_not_present = True
         self.secret = secret
-        if 'version' in kwargs:
-            self.version = kwargs['version']
-        if 'create_if_not_present' in kwargs:
-            self.create_if_not_present = kwargs['create_if_not_present']
-        if 'project' in kwargs:
-            self.project = kwargs['project']
-        else:
-            self.project = os.environ.get('PROJECT', None)
+
+        assert 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ, "This module requires the GOOGLE_APPLICATION_CREDENTIALS environment variable be set"
+
+        supported_project_env_vars = [ 'PROJECT', 'GOOGLE_CLOUD_PROJECT', 'GCP_PROJECT', 'GCLOUD_PROJECT' ]
+
+        self.create_if_not_present = kwargs.get('create_if_not_present',True)
+        self.version = kwargs.get('version','latest')
+        self.project = kwargs.get('project',None)
+        for prj in supported_project_env_vars:
+            if self.project:
+                break
+            self.project = os.environ.get(prj,None)
+
+        assert self.project, "Project must be specified"
 
         self.client = secretmanager.SecretManagerServiceClient()
         self._secrets = {}
