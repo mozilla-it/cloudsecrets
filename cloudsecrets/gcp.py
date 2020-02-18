@@ -6,6 +6,8 @@ import logging
 
 from cloudsecrets import SecretsBase
 
+from google.api_core import exceptions
+
 class Secrets(SecretsBase):
     """
     GCP Implementation of Mozilla-IT application secrets
@@ -65,11 +67,17 @@ class Secrets(SecretsBase):
 
     @property
     def _secret_exists(self) -> bool:
+        """
+        Test if a secret resource exists
+        """
         try:
             self.client.get_secret(self.client.secret_path(self.project, self.secret))
             return True
-        except:
+        except exceptions.NotFound:
             return False
+        except:
+            raise
+
     def _load_secrets(self) -> None:
         """
         Load upstream secret resource, replacing local secrets
@@ -77,7 +85,7 @@ class Secrets(SecretsBase):
         secret_path = f"projects/{self._project}/secrets/{self.secret}/versions/{self._version}"
         secrets = {}
         if self.create_if_not_present and not self._secret_exists:
-            self.create_secret_resource()
+            self._create_secret_resource()
 
         try:
             x = self.client.access_secret_version(secret_path)
