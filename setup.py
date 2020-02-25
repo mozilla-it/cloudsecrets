@@ -11,6 +11,6 @@ setup(
     author_email="afrank@mozilla.com",
     packages=find_packages(),
     scripts=['bin/cloud-secrets'],
-    install_requires=['google-cloud-secret-manager']
+    install_requires=['google-cloud-secret-manager','boto3']
 )
 
