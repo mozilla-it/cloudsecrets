@@ -1,8 +1,8 @@
 # cloudsecrets
 
-cloudsecrets is a thin layer for cloud vendor secrets managers which asserts some consistency between various solutions and makes implement multi-cloud friendly code easy.
+cloudsecrets is a thin layer for cloud vendor secrets managers which asserts some consistency between various solutions and makes implementing multi-cloud friendly code easy.
 
-The cloudsecrets library includes a cli mozilla-secrets which exposes all the features of the library.
+The cloudsecrets library includes a cli cloud-secrets which exposes all the features of the library.
 
 Current supported platforms include GCP (secretmanager) and AWS (secrets manager).
 
