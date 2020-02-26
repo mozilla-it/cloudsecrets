@@ -10,12 +10,12 @@ Current supported platforms include GCP (secretmanager) and AWS (secrets manager
 
 From the command line:
 ```
-pip3 install git+https://github.com/mozafrank/cloudsecrets.git
+pip3 install git+https://github.com/mozilla-it/cloudsecrets.git
 ```
 From Pipenv:
 ```
 [packages]
-cloudsecrets = { version = "*", git = "https://github.com/mozafrank/cloudsecrets.git", ref = "master", editable = false }
+cloudsecrets = { version = "*", git = "https://github.com/mozilla-it/cloudsecrets.git", ref = "master", editable = false }
 ```
 If you're using pipenv to generate a requirements file for pypi try this syntax:
 ```
