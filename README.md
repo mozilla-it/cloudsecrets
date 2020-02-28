@@ -86,7 +86,7 @@ optional arguments:
   -X, --delete          Delete Secret (or key if -k is specified). Cannot be
                         used with -E or -D
   -p PROVIDER, --provider PROVIDER
-                        Provider. Supported: AWS|GCP
+                        Provider. Supported: aws|gcp
   -s SECRET, --secret SECRET
                         which secret resource to work with
   -k KEY, --key KEY     which key inside a secret to work with. if no key is
