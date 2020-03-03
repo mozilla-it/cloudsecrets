@@ -2,12 +2,14 @@ import base64
 import json
 import logging
 import os
+import threading
 
 class SecretsBase:
     def __init__(self,secret,**kwargs) -> None:
         logging.getLogger(__name__)
         self._secrets = {}
         self._encoded_secrets = {}
+        self._timer = None
         self.secret = secret
         self._version = kwargs.get("version","1")
     @property
@@ -24,12 +26,23 @@ class SecretsBase:
         return True
     def __iter__(self) -> iter:
         return iter(self._secrets.items())
+    def _list_versions(self) -> list:
+        return [ self._version ]
+    def _load_latest(self) -> None:
+        self._version = str(self._list_versions()[-1])
+        self._load_secrets()
     def _load_secrets(self) -> None:
         self._version = "1"
     def _create_secret_resource(self) -> None:
         pass
     def update(self) -> None:
         pass
+    def _poll_secrets(self):
+        self._load_latest()
+        if self._polling_interval > 0:
+            self._timer = threading.Timer(self._polling_interval,self._poll_secrets)
+            self._timer.daemon = True
+            self._timer.start()
     def set(self,key,val) -> None:
         """
         The key/val here aren't the key/val of secretmanager, they're a key/val within a given secret val.

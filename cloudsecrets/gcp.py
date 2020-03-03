@@ -48,10 +48,13 @@ class Secrets(SecretsBase):
         assert 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ, "This module requires the GOOGLE_APPLICATION_CREDENTIALS environment variable be set"
 
         supported_project_env_vars = [ 'PROJECT', 'GOOGLE_CLOUD_PROJECT', 'GCP_PROJECT', 'GCLOUD_PROJECT' ]
+        self._timer = None
 
         self.create_if_not_present = kwargs.get('create_if_not_present',True)
         self._version = kwargs.get('version','latest')
         self._project = kwargs.get('project',None)
+        self._polling_interval = kwargs.get('polling_interval',0)
+
         for prj in supported_project_env_vars:
             if self._project:
                 break
@@ -59,11 +62,17 @@ class Secrets(SecretsBase):
 
         assert self._project, "Project must be specified"
 
+        if self._polling_interval > 0 and self._version != 'latest':
+            raise Exception("Cannot use a non-latest secret version with polling")
+
         self.client = secretmanager.SecretManagerServiceClient()
         self._secrets = {}
         self._encoded_secrets = {}
 
-        self._load_secrets()
+        if self._polling_interval > 0:
+            self._poll_secrets()
+        else:
+            self._load_secrets()
 
     @property
     def _secret_exists(self) -> bool:
@@ -77,6 +86,13 @@ class Secrets(SecretsBase):
             return False
         except:
             raise
+
+    def _list_versions(self) -> list:
+        parent = self.client.secret_path(self._project,self.secret)
+        ret = []
+        for x in self.client.list_secret_versions(parent):
+            ret += [int(x.name.split('/')[-1])]
+        return sorted(ret)
 
     def _load_secrets(self) -> None:
         """
