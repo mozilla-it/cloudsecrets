@@ -117,4 +117,3 @@ class Secrets(SecretsBase):
         j_blob = json.dumps(self._encoded_secrets).encode('UTF-8')
         resp = self.client.add_secret_version(self.client.secret_path(self.project, self.secret), {'data': j_blob})
         self._version = resp.name.split('/')[-1]
-

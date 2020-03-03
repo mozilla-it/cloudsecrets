@@ -123,3 +123,16 @@ class Secrets(SecretsBase):
         resp = self.client.update_secret(SecretId=self.secret,SecretBinary=j_blob)
         self._version = resp['VersionId']
 
+    def rollback(self,version='-1') -> None:
+        try:
+            ver = int(version)
+            all_versions = self._list_versions()
+            cur_idx = all_versions.index(self._version)
+            if ver <= 0:
+                self._version = all_versions[cur_idx + ver]
+            else:
+                self._version = all_versions[ver]
+        except:
+           # what was provided wasn't a number, so just attempt to use it.
+           self._version = version
+        self._load_secrets()

@@ -53,8 +53,10 @@ class SecretsBase:
             del self._encoded_secrets[key]
         self.update()
 
-    def rollback(self,version=-1) -> None:
-        if version < 0:
-            version = int(self._version) + int(version)
+    def rollback(self,version='-1') -> None:
+        ver = int(version)
+        if ver <= 0:
+            self._version = int(self._version) + ver
+        else:
+            self._version = version
         self._load_secrets()
-
