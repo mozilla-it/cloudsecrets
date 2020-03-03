@@ -1,4 +1,6 @@
 from cloudsecrets import SecretsBase
+import os
+import json
 
 class Secrets(SecretsBase):
     def __init__(self,filename,**kwargs) -> None:

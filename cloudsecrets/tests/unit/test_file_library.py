@@ -4,7 +4,7 @@ import unittest.mock as mock
 import os
 
 from google.cloud import secretmanager
-from cloudsecrets import FileSecrets
+from cloudsecrets.file import Secrets
 
 class FakeSecret:
     name = "projects/fake-project/secrets/fake-secret/versions/1"
@@ -29,7 +29,7 @@ class FakeClient:
 
 class TestFileLibrary(unittest.TestCase):
     def test_create_secret_version(self):
-        s = FileSecrets("test-secrets.json", create_if_not_present=True)
+        s = Secrets("test-secrets.json", create_if_not_present=True)
         assert s.version == '1'
         s.set('FAKE','SECRET')
         assert dict(s).get('FAKE') == 'SECRET'

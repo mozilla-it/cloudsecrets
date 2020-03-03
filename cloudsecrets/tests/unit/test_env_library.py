@@ -3,11 +3,11 @@ import unittest
 import unittest.mock as mock
 import os
 
-from cloudsecrets import EnvSecrets
+from cloudsecrets.env import Secrets
 
 class TestEnvLibrary(unittest.TestCase):
     def test_create_secret_version(self):
-        s = EnvSecrets("")
+        s = Secrets("")
         ver = s.version
         s.set('FAKE','SECRET')
         assert dict(s).get('FAKE') == 'SECRET'
