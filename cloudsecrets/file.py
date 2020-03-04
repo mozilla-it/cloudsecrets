@@ -7,6 +7,7 @@ class Secrets(SecretsBase):
         super().__init__("",**kwargs)
         self.filename = filename
         self.create_if_not_present = kwargs.get('create_if_not_present',True)
+        self._version = '1'
         self._load_secrets()
     def _load_secrets(self) -> None:
         if not os.path.exists(self.filename) and self.create_if_not_present:

@@ -42,18 +42,12 @@ class Secrets(SecretsBase):
     
     """
     def __init__(self,secret,**kwargs) -> None:
-        super()
-        self.secret = secret
-
+        super().__init__(secret,**kwargs)
         assert 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ, "This module requires the GOOGLE_APPLICATION_CREDENTIALS environment variable be set"
 
         supported_project_env_vars = [ 'PROJECT', 'GOOGLE_CLOUD_PROJECT', 'GCP_PROJECT', 'GCLOUD_PROJECT' ]
-        self._timer = None
 
-        self.create_if_not_present = kwargs.get('create_if_not_present',True)
-        self._version = kwargs.get('version','latest')
         self._project = kwargs.get('project',None)
-        self._polling_interval = kwargs.get('polling_interval',0)
 
         for prj in supported_project_env_vars:
             if self._project:
@@ -62,17 +56,9 @@ class Secrets(SecretsBase):
 
         assert self._project, "Project must be specified"
 
-        if self._polling_interval > 0 and self._version != 'latest':
-            raise Exception("Cannot use a non-latest secret version with polling")
-
         self.client = secretmanager.SecretManagerServiceClient()
-        self._secrets = {}
-        self._encoded_secrets = {}
 
-        if self._polling_interval > 0:
-            self._poll_secrets()
-        else:
-            self._load_secrets()
+        self._init_secrets()
 
     @property
     def _secret_exists(self) -> bool:
@@ -98,7 +84,7 @@ class Secrets(SecretsBase):
         """
         Load upstream secret resource, replacing local secrets
         """
-        secret_path = f"projects/{self._project}/secrets/{self.secret}/versions/{self._version}"
+        secret_path = f"projects/{self._project}/secrets/{self.secret}/versions/{self._version or 'latest'}"
         secrets = {}
         if self.create_if_not_present and not self._secret_exists:
             self._create_secret_resource()

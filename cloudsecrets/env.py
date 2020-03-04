@@ -7,6 +7,7 @@ import logging
 class Secrets(SecretsBase):
     def __init__(self,secret=None,**kwargs) -> None:
         super().__init__(secret,**kwargs)
+        self._version = "1"
         self._load_secrets()
     def _load_secrets(self) -> None:
         for k,v in os.environ.items():

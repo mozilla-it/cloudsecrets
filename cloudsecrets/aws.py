@@ -42,19 +42,14 @@ class Secrets(SecretsBase):
     
     """
     def __init__(self,secret,**kwargs) -> None:
-        super()
-        self.secret = secret
+        super().__init__(secret,**kwargs)
 
-        self.create_if_not_present = kwargs.get('create_if_not_present',True)
-        self._version = kwargs.get('version',None)
         self._region = kwargs.get('region',None)
 
         self.session = boto3.session.Session()
         self.client = self.session.client(service_name='secretsmanager')
-        self._secrets = {}
-        self._encoded_secrets = {}
 
-        self._load_secrets()
+        self._init_secrets()
 
     @property
     def _secret_exists(self) -> bool:
@@ -123,16 +118,3 @@ class Secrets(SecretsBase):
         resp = self.client.update_secret(SecretId=self.secret,SecretBinary=j_blob)
         self._version = resp['VersionId']
 
-    def rollback(self,version='-1') -> None:
-        try:
-            ver = int(version)
-            all_versions = self._list_versions()
-            cur_idx = all_versions.index(self._version)
-            if ver <= 0:
-                self._version = all_versions[cur_idx + ver]
-            else:
-                self._version = all_versions[ver]
-        except:
-           # what was provided wasn't a number, so just attempt to use it.
-           self._version = version
-        self._load_secrets()

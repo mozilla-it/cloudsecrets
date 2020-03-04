@@ -11,7 +11,12 @@ class SecretsBase:
         self._encoded_secrets = {}
         self._timer = None
         self.secret = secret
-        self._version = kwargs.get("version","1")
+        self.create_if_not_present = kwargs.get('create_if_not_present',True)
+        self._version = kwargs.get('version',None)
+        self._polling_interval = kwargs.get('polling_interval',0)
+
+        assert self._polling_interval <= 0 or not self._version, "Cannot use a non-latest secret version with polling"
+
     @property
     def secrets(self) -> dict:
         return self._secrets
@@ -26,6 +31,11 @@ class SecretsBase:
         return True
     def __iter__(self) -> iter:
         return iter(self._secrets.items())
+    def _init_secrets(self) -> None:
+        if self._polling_interval > 0:
+            self._poll_secrets()
+        else:
+            self._load_secrets()
     def _list_versions(self) -> list:
         return [ self._version ]
     def _load_latest(self) -> None:
@@ -67,9 +77,16 @@ class SecretsBase:
         self.update()
 
     def rollback(self,version='-1') -> None:
-        ver = int(version)
-        if ver <= 0:
-            self._version = int(self._version) + ver
-        else:
-            self._version = version
+        try:
+            ver = int(version)
+            all_versions = self._list_versions()
+            cur_idx = all_versions.index(self._version)
+            if ver <= 0:
+                self._version = all_versions[cur_idx + ver]
+            else:
+                self._version = all_versions[ver]
+        except:
+           # what was provided wasn't a number, so just attempt to use it.
+           self._version = version
         self._load_secrets()
+
