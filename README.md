@@ -74,7 +74,7 @@ Rollback to an old version, then set that version to latest
 ## How to Use the CLI
 
 ```
-usage: mozilla-secrets [-h] [-E] [-D] [-X] [-p PROVIDER] -s SECRET [-k KEY]
+usage: cloud-secrets [-h] [-E] [-D] [-X] [-p PROVIDER] -s SECRET [-k KEY]
                        [-f FILE] [-v VALUE] [-b B64VALUE] [-g GCPPROJECT]
 
 Mozilla-IT Secrets
@@ -105,8 +105,8 @@ optional arguments:
 ```
 Create and retrieve a secret key:
 ```
-$ mozilla-secrets -E -p GCP -g dp2-stage -s afrank-secrets -k YETANOTHER -v SECRETVALUE
+$ cloud-secrets -E -p GCP -g dp2-stage -s afrank-secrets -k YETANOTHER -v SECRETVALUE
 
-$ mozilla-secrets -D -p GCP -g dp2-stage -s afrank-secrets -k YETANOTHER
+$ cloud-secrets -D -p GCP -g dp2-stage -s afrank-secrets -k YETANOTHER
 SECRETVALUE
 ```
