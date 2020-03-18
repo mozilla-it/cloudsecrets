@@ -1,0 +1,6 @@
+graft cloudsecrets
+graft tests
+
+include LICENSE
+include README.md
+include .travis.yml
