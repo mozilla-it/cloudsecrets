@@ -1,4 +1,15 @@
+# Python Build
 __pycache__
 *.egg-info
 *.pyc
+.eggs
+build
+
+# Unit Tests
 test-secrets.json
+
+# Visual Studio Code
+.vscode
+
+# PyCharm
+.idea

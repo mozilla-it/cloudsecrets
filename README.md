@@ -1,5 +1,7 @@
 # cloudsecrets
 
+[![Build Status](https://travis-ci.com/mozilla-it/cloudsecrets.svg?branch=master)](https://travis-ci.com/mozilla-it/cloudsecrets)
+
 cloudsecrets is a thin layer for cloud vendor secrets managers which asserts some consistency between various solutions and makes implementing multi-cloud friendly code easy.
 
 The cloudsecrets library includes a cli cloud-secrets which exposes all the features of the library.
