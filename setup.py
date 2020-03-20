@@ -9,13 +9,13 @@ setup(
     python_requires=">=3.4",
     author="Mozilla IT Service Engineering",
     author_email="afrank@mozilla.com",
-    packages=find_packages(where='cloudsecrets'),
+    packages=find_packages(),
     #entry_points={
     #    'console_scripts': [
     #        'cloud-secrets=bin.main',
     #    ],
     #},
-    package_dir={'': 'cloudsecrets'},
+    #package_dir={'': 'cloudsecrets'},
     install_requires=[
         'google-cloud-secret-manager',
         'boto3'
