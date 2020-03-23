@@ -16,11 +16,8 @@ cache:
 before_install:
   - pip install pipenv==2018.11.26
   - pip install codecov==2.0.22
-jobs:
-  include:
-    - stage: Unit Tests
-      script:
-        - python setup.py test
+script:
+  - python setup.py test
 after_success:
   - codecov
 
