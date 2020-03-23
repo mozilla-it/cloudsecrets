@@ -2,8 +2,6 @@ language: python
 dist: xenial
 sudo: required
 python:
-  - "3.4"
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
@@ -12,7 +10,7 @@ python:
 addons:
   apt:
     sources: ['ubuntu-toolchain-r-test']
-    packages: ['bash', 'coreutils']
+    packages: ['bash', 'coreutils', 'awscli']
 cache:
   directories:
     - /home/travis/.cache/pip
