@@ -6,6 +6,7 @@ import logging
 import base64
 import importlib
 import json
+import sys
 
 """
 A secret is a json dictionary of ascii:base64 key:value pairs.
@@ -13,7 +14,7 @@ A secret is a json dictionary of ascii:base64 key:value pairs.
 
 PROVIDERS = [ "gcp", "aws" ]
 
-if __name__ == "__main__":
+def main():
   parser = argparse.ArgumentParser(description="Mozilla-IT Secrets")
   parser.add_argument('-E','--encrypt',action='store_true', help='Encrypt. Cannot be used with -D or -X')
   parser.add_argument('-D','--decrypt',action='store_true', help='Decrypt. Cannot be used with -E or -X')
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     s.unset(args.key)
   elif args.delete:
     # delete an entire secret
-    raise Exception("Not implemented yet.")
+    raise NotImplementedError
 
   if args.encrypt and args.key:
     # add or update a key within a secret
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     s.set(args.key,val)
   elif args.encrypt:
     # add or replace and entire secret
-    raise Exception("Not implemented yet.")
+    raise NotImplementedError
 
   if args.decrypt:
     if args.key:
@@ -73,3 +74,6 @@ if __name__ == "__main__":
         w.write(x)
     else:
       print(x)
+
+if __name__ == "__main__":
+    sys.exit(main())

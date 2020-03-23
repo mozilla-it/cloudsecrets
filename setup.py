@@ -10,11 +10,11 @@ setup(
     author="Mozilla IT Service Engineering",
     author_email="afrank@mozilla.com",
     packages=find_packages(),
-    #entry_points={
-    #    'console_scripts': [
-    #        'cloud-secrets=bin.main',
-    #    ],
-    #},
+    entry_points={
+        'console_scripts': [
+            'cloud-secrets=cloudsecrets.cli:main',
+        ],
+    },
     #package_dir={'': 'cloudsecrets'},
     install_requires=[
         'google-cloud-secret-manager',
