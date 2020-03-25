@@ -8,6 +8,14 @@ The cloudsecrets library includes a cli cloud-secrets which exposes all the feat
 
 Current supported platforms include GCP (secretmanager) and AWS (secrets manager).
 
+## Docker
+
+### Building and Testing
+
+```
+docker build -t mozilla/cloudsecrets .
+```
+
 ## Development
 
 ### Prerequisites
