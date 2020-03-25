@@ -8,6 +8,20 @@ The cloudsecrets library includes a cli cloud-secrets which exposes all the feat
 
 Current supported platforms include GCP (secretmanager) and AWS (secrets manager).
 
+## Development
+
+### Prerequisites
+
+1. Python 3.7
+2. pip
+3. pre-commit
+
+### Development Setup
+
+1. git clone {git@github.com:mozilla-it/cloudsecrets.git | https://github.com/mozilla-it/cloudsecrets.git}
+2. cd cloudsecrets
+3. pre-commit install
+
 ## How to Install
 
 From the command line:
