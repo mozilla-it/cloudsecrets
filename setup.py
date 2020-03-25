@@ -15,7 +15,6 @@ setup(
             'cloud-secrets=cloudsecrets.cli:main',
         ],
     },
-    #package_dir={'': 'cloudsecrets'},
     install_requires=[
         'google-cloud-secret-manager',
         'boto3'
