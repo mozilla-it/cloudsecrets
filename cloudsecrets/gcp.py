@@ -43,7 +43,8 @@ class Secrets(SecretsBase):
     """
     def __init__(self,secret,**kwargs) -> None:
         super().__init__(secret,**kwargs)
-        assert 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ, "This module requires the GOOGLE_APPLICATION_CREDENTIALS environment variable be set"
+        if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
+            logging.warning("Warning: You do not have GOOGLE_APPLICATION_CREDENTIALS set")
 
         supported_project_env_vars = [ 'PROJECT', 'GOOGLE_CLOUD_PROJECT', 'GCP_PROJECT', 'GCLOUD_PROJECT' ]
 
