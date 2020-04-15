@@ -102,7 +102,7 @@ class Secrets(SecretsBase):
 
     def _list_versions(self) -> list:
         try:
-            resp = self.client.list_secret_version_ids(SecretId=self.secret,IncludeDeprecated=True,MaxResults=1024)
+            resp = self.client.list_secret_version_ids(SecretId=self.secret,IncludeDeprecated=True,MaxResults=100)
             x = [ (x['VersionId'],x['CreatedDate']) for x in resp['Versions'] ]
             x.sort(key = lambda _x: _x[1]) # sorted oldest to newest
             return [ k for k,v in x ]
