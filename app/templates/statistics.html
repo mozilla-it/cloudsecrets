@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Cloudsnap Analytics</h1>
+    <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Successful</th>
+      <th>Failed</th>
+      <th>Retried</th>
+      <th>Paused</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for statistic in statistics %}
+      <tr>
+        <td>{{ statistic.date }}</td>
+        <td>{{ statistic.successful }}</td>
+        <td>{{ statistic.failed }}</td>
+        <td>{{ statistic.retried }}</td>
+        <td>{{ statistic.paused }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if statistics.has_other_pages %}
+  <ul class="pagination">
+    {% if statistics.has_previous %}
+      <li><a href="?page={{ statistics.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in statistics.paginator.page_range %}
+      {% if statistics.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if statistics.has_next %}
+      <li><a href="?page={{ statistics.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% endblock %}

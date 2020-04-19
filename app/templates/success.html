@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Cloudsnap Analytics</h1>
+    <table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Entity</th>
+      <th>Name</th>
+      <th>Timestamp</th>
+      <th>Url</th>
+      <th>Instance</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for success in successes %}
+      <tr>
+        <td>{{ success.entity }}</td>
+        <td>{{ success.name }}</td>
+        <td>{{ success.timestamp }}</td>
+        <td><a href={{ success.url }}>Here</a></td>
+        <td>{{ success.instance }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if successes.has_other_pages %}
+  <ul class="pagination">
+    {% if successes.has_previous %}
+      <li><a href="?page={{ successes.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in successes.paginator.page_range %}
+      {% if successes.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if successes.has_next %}
+      <li><a href="?page={{ successes.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container"><br>
+    <center>
+        <h2>CloudSnap Analytics Configuration</h2>
+    </center>
+</div>
+
+<div class=container"><br>
+    <div class="row align-items-center justify-content-center">
+        <div class="col-md-4">
+            <br>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+
+                    {% for message in messages %}
+                        {% if "Error" not in message[1]: %}
+                            <div class="alert alert-info">
+                                <strong>Success! </strong> {{ message[1] }}
+                            </div>
+                        {% endif %}
+
+                        {% if "Error" in message[1]: %}
+                            <div class="alert alert-danger">
+                                <strong>Error: </strong> {{ message[1] }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+        </div>
+        <br>
+    </div>
+</div>
+{% endblock %}

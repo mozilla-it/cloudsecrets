@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-3">
+        <h1>Cloudsnap Analytics</h1>
+        <input class="form-control" id="myInput" type="text" placeholder="Search Criteria"
+               onkeyup="console.log('search')">
+        <br>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Entity</th>
+                <th>Name</th>
+                <th>Timestamp</th>
+                <th>Url</th>
+                <th>Actions</th>
+                <th>Runbook</th>
+            </tr>
+            </thead>
+            <tbody id="myTable">
+            {% for step_failure in step_failures %}
+                <tr>
+                    <td>{{ step_failure.entity }}</td>
+                    <td>{{ step_failure.name }}</td>
+                    <td>{{ step_failure.timestamp }}</td>
+                    <td>
+                        <a target="_blank" rel="noopener noreferrer" href={{ step_failure.url }}>Here</a>
+                    </td>
+                    <td>
+                        <div class="btn-group ">
+                            <button id="retry-button" class="btn btn-success has-spinner"
+                                    onclick="console.log('retry')">
+                                <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+                                Retry
+                            </button>
+                            <button id="dismiss-button" class="btn btn-danger has-spinner">
+                                <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
+                                Dismiss
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1-6Skmt1HGmUjYpClL2v5HH8I7vofeFcTgADsjE5-QUo/edit?usp=sharing">Here</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if step_failures.has_other_pages %}
+        <ul class="pagination">
+            {% if step_failures.has_previous %}
+                <li><a href="?page={{ step_failures.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for i in step_failures.paginator.page_range %}
+                {% if step_failures.number == i %}
+                    <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if step_failures.has_next %}
+                <li><a href="?page={{ step_failures.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+        </ul>
+    {% endif %}
+    <script>
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+    <script>
+        $("#myTable").on("click", "#dismiss-button", function () {
+            $(this).closest("tr").remove();
+        });
+    </script>
+    <script>
+        $("#myTable").on("click", "#retry-button", function () {
+            var tr = $(this).closest("tr");
+            tr.remove();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,27 @@
+#  MacOS Filesystem
+.DS_Store
+
+# Visual Studio Code
+.vscode
+
+# PyCharm
+.idea
+
+# Python
+*.pyc
+site/env
+build
+.eggs
+dist
+
+# Vagrant
+.vagrant
+
+# Logs
+*.log
+
+# SQLite
+*.db
+
+#Virtual Environments
+venv
