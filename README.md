@@ -1,5 +1,7 @@
 # Cloudsnap Analytics
 
+[![Build Status](https://travis-ci.com/mozilla-it/cloudsnap-analytics.svg?token=tcy8Sk3pbmSki6yTjsma&branch=master)](https://travis-ci.com/mozilla-it/cloudsnap-analytics)
+
 ## Development
 
 1. `python3 -m venv venv`

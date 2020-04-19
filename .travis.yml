@@ -1,0 +1,28 @@
+language: python
+dist: xenial
+sudo: required
+python:
+ - "3.7"
+services:
+ - docker
+addons:
+  apt:
+    sources: ['ubuntu-toolchain-r-test']
+    packages: [
+      'bash',
+      'coreutils'
+    ]
+cache:
+  directories:
+    - /home/travis/.cache/pip
+
+before_install:
+  - cd app
+  - pip3 install -r requirements.txt
+
+jobs:
+  include:
+    - stage: Build Linux Installer
+      script:
+        - pip3 install PyInstaller==3.6
+        - pyinstaller --onefile --add-data 'templates:templates' app.py
