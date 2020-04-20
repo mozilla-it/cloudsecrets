@@ -31,8 +31,15 @@
                     </td>
                     <td>
                         <div class="btn-group ">
-                            <button id="retry-button" class="btn btn-success has-spinner"
-                                    onclick="console.log('retry')">
+                            <button id="retry-button"
+                                    class="btn btn-success has-spinner"
+                                    onclick="function _() {
+                                      window.open(
+                                        '{{ paused_job.instance }}',
+                                        '_blank'
+                                        );
+                                    }; _();"
+                            >
                                 <span class="spinner"><i class="icon-spin icon-refresh"></i></span>
                                 Retry
                             </button>
