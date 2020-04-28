@@ -4,9 +4,9 @@ import json
 import os
 import logging
 
-from cloudsecrets import SecretsBase
+from six import b
 
-from botocore.exceptions import ClientError
+from cloudsecrets import SecretsBase
 
 
 class Secrets(SecretsBase):
@@ -43,26 +43,44 @@ class Secrets(SecretsBase):
 
     """
 
-    def __init__(self, secret, **kwargs) -> None:
+    def __init__(self, secret, connection=None, region=None, **kwargs) -> None:
+        logging.debug(f"AWS {self.__init__.__name__}({secret, region})")
         super().__init__(secret, **kwargs)
-
-        self._region = kwargs.get("region", None)
-
-        self.session = boto3.session.Session()
-        self.client = self.session.client(service_name="secretsmanager")
-
+        if connection is None:
+            self.connection = boto3.client("secretsmanager", region_name=region)
+        else:
+            self.connection = connection
         self._init_secrets()
+
+    def update(self) -> None:
+        logging.debug(f"AWS {self.update.__name__}({self.secret})")
+        secret_json_blob = b(json.dumps(self._encoded_secrets))
+        if self._secret_exists:
+            logging.debug(
+                f"AWS {self.update.__name__}({self.secret}), updating an existing value"
+            )
+            secret = self.connection.put_secret_value(
+                SecretId=self.secret, SecretBinary=secret_json_blob
+            )
+        else:
+            logging.debug(
+                f"AWS {self.update.__name__}({self.secret}), creating a new secret"
+            )
+            secret = self.connection.create_secret(
+                Name=self.secret, SecretBinary=secret_json_blob
+            )
+        self._version = secret["VersionId"]
+
+    def delete(self, key) -> None:
+        self.connection.delete_secret(SecretId=key)
 
     @property
     def _secret_exists(self) -> bool:
         """
         Test if a secret resource exists
         """
-        params = dict(SecretId=self.secret)
-        if self._version:
-            params["VersionId"] = self._version
         try:
-            self.client.get_secret_value(**params)
+            self.connection.get_secret_value(SecretId=self.secret)
             return True
         except:
             return False
@@ -80,13 +98,13 @@ class Secrets(SecretsBase):
             params["VersionId"] = self._version
 
         try:
-            x = self.client.get_secret_value(**params)
+            x = self.connection.get_secret_value(**params)
         except:
             self._encoded_secrets = {}
             self._secrets = {}
             return
         self._version = x["VersionId"]
-        payload = x["SecretBinary"].decode("utf-8")
+        payload = x["SecretBinary"]
         self._encoded_secrets = json.loads(payload)
         for k, v in self._encoded_secrets.items():
             secrets[k] = base64.b64decode(v).decode("ascii")
@@ -97,7 +115,7 @@ class Secrets(SecretsBase):
         Create the secret resource which will hold versions of secrets. A secret resource on its own has no secret data.
         """
         try:
-            self.client.create_secret(
+            self.connection.create_secret(
                 Name=self.secret, SecretBinary="{}".encode("UTF-8")
             )
         except Exception as e:
@@ -106,7 +124,7 @@ class Secrets(SecretsBase):
 
     def _list_versions(self) -> list:
         try:
-            resp = self.client.list_secret_version_ids(
+            resp = self.connection.list_secret_version_ids(
                 SecretId=self.secret, IncludeDeprecated=True, MaxResults=100
             )
             x = [(x["VersionId"], x["CreatedDate"]) for x in resp["Versions"]]
@@ -115,11 +133,3 @@ class Secrets(SecretsBase):
         except Exception as e:
             logging.error("Failed to list versions: {}".format(e))
             raise
-
-    def update(self) -> None:
-        """
-        Commit the current state of self._secrets to a new secret version
-        """
-        j_blob = json.dumps(self._encoded_secrets).encode("UTF-8")
-        resp = self.client.update_secret(SecretId=self.secret, SecretBinary=j_blob)
-        self._version = resp["VersionId"]

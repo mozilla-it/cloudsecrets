@@ -10,6 +10,9 @@ addons:
 cache:
   directories:
     - /home/travis/.cache/pip
+env:
+  global:
+  - BOTO_CONFIG: "/dev/null"
 before_install:
   - pip install pipenv==2018.11.26
 jobs:

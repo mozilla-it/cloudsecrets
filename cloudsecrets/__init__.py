@@ -106,3 +106,6 @@ class SecretsBase:
             # what was provided wasn't a number, so just attempt to use it.
             self._version = version
         self._load_secrets()
+
+    def delete(self, key) -> None:
+        pass
