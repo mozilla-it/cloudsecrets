@@ -4,6 +4,8 @@ __pycache__
 *.pyc
 .eggs
 build
+.tox
+venv
 
 # Unit Tests
 test-secrets.json
