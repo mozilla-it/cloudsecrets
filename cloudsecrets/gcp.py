@@ -8,6 +8,7 @@ from cloudsecrets import SecretsBase
 
 from google.api_core import exceptions
 
+
 class Secrets(SecretsBase):
     """
     GCP Implementation of Mozilla-IT application secrets
@@ -24,7 +25,7 @@ class Secrets(SecretsBase):
       "MYSECRET": "VkFMVUU=",
       "creds.json": "ewogICAgImJsb2IiOiAiaGVyZSBpcyBzb21lIHN0dWZmIgp9Cg=="
     }
-    
+
     Project must be specified, either as a keyword argument or env var.
     Supported env vars are PROJECT, GOOGLE_CLOUD_PROJECT, GCP_PROJECT, GCLOUD_PROJECT
     >>> os.environ['PROJECT'] = "my-project"
@@ -39,21 +40,29 @@ class Secrets(SecretsBase):
     The Secrets class supports being called as a dictionary
     >>> dict(s).get("MYSECRET")
     'VALUE'
-    
+
     """
-    def __init__(self,secret,**kwargs) -> None:
-        super().__init__(secret,**kwargs)
-        if 'GOOGLE_APPLICATION_CREDENTIALS' not in os.environ:
-            logging.warning("Warning: You do not have GOOGLE_APPLICATION_CREDENTIALS set")
 
-        supported_project_env_vars = [ 'PROJECT', 'GOOGLE_CLOUD_PROJECT', 'GCP_PROJECT', 'GCLOUD_PROJECT' ]
+    def __init__(self, secret, **kwargs) -> None:
+        super().__init__(secret, **kwargs)
+        if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+            logging.warning(
+                "Warning: You do not have GOOGLE_APPLICATION_CREDENTIALS set"
+            )
 
-        self._project = kwargs.get('project',None)
+        supported_project_env_vars = [
+            "PROJECT",
+            "GOOGLE_CLOUD_PROJECT",
+            "GCP_PROJECT",
+            "GCLOUD_PROJECT",
+        ]
+
+        self._project = kwargs.get("project", None)
 
         for prj in supported_project_env_vars:
             if self._project:
                 break
-            self._project = os.environ.get(prj,None)
+            self._project = os.environ.get(prj, None)
 
         assert self._project, "Project must be specified"
 
@@ -75,10 +84,10 @@ class Secrets(SecretsBase):
             raise
 
     def _list_versions(self) -> list:
-        parent = self.client.secret_path(self._project,self.secret)
+        parent = self.client.secret_path(self._project, self.secret)
         ret = []
         for x in self.client.list_secret_versions(parent):
-            ret += [int(x.name.split('/')[-1])]
+            ret += [int(x.name.split("/")[-1])]
         return sorted(ret)
 
     def _load_secrets(self) -> None:
@@ -96,11 +105,11 @@ class Secrets(SecretsBase):
             self._encoded_secrets = {}
             self._secrets = {}
             return
-        self._version = x.name.split('/')[-1]
+        self._version = x.name.split("/")[-1]
         payload = x.payload.data.decode("utf-8")
         self._encoded_secrets = json.loads(payload)
-        for k,v in self._encoded_secrets.items():
-            secrets[k] = base64.b64decode(v).decode('ascii')
+        for k, v in self._encoded_secrets.items():
+            secrets[k] = base64.b64decode(v).decode("ascii")
         self._secrets = secrets
 
     def _create_secret_resource(self) -> None:
@@ -108,7 +117,11 @@ class Secrets(SecretsBase):
         Create the secret resource which will hold versions of secrets. A secret resource on its own has no secret data.
         """
         try:
-            self.client.create_secret(self.client.project_path(self.project), self.secret, { 'replication': { 'automatic': {}}})
+            self.client.create_secret(
+                self.client.project_path(self.project),
+                self.secret,
+                {"replication": {"automatic": {}}},
+            )
         except Exception as e:
             logging.error("Failed to create secret resource: {}".format(e))
             raise
@@ -117,6 +130,8 @@ class Secrets(SecretsBase):
         """
         Commit the current state of self._secrets to a new secret version
         """
-        j_blob = json.dumps(self._encoded_secrets).encode('UTF-8')
-        resp = self.client.add_secret_version(self.client.secret_path(self.project, self.secret), {'data': j_blob})
-        self._version = resp.name.split('/')[-1]
+        j_blob = json.dumps(self._encoded_secrets).encode("UTF-8")
+        resp = self.client.add_secret_version(
+            self.client.secret_path(self.project, self.secret), {"data": j_blob}
+        )
+        self._version = resp.name.split("/")[-1]
