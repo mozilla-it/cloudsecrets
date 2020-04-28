@@ -45,29 +45,24 @@ class Secrets(SecretsBase):
 
     def __init__(self, secret, **kwargs) -> None:
         super().__init__(secret, **kwargs)
+        logging.debug(f"GCP __init__(f{secret})")
         if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
             logging.warning(
                 "Warning: You do not have GOOGLE_APPLICATION_CREDENTIALS set"
             )
-
         supported_project_env_vars = [
             "PROJECT",
             "GOOGLE_CLOUD_PROJECT",
             "GCP_PROJECT",
             "GCLOUD_PROJECT",
         ]
-
         self._project = kwargs.get("project", None)
-
         for prj in supported_project_env_vars:
             if self._project:
                 break
             self._project = os.environ.get(prj, None)
-
         assert self._project, "Project must be specified"
-
         self.client = secretmanager.SecretManagerServiceClient()
-
         self._init_secrets()
 
     @property
@@ -75,6 +70,7 @@ class Secrets(SecretsBase):
         """
         Test if a secret resource exists
         """
+        logging.debug(f"GCP _secret_exists")
         try:
             self.client.get_secret(self.client.secret_path(self.project, self.secret))
             return True
@@ -84,6 +80,7 @@ class Secrets(SecretsBase):
             raise
 
     def _list_versions(self) -> list:
+        logging.debug(f"GCP _list_versions")
         parent = self.client.secret_path(self._project, self.secret)
         ret = []
         for x in self.client.list_secret_versions(parent):
@@ -94,11 +91,11 @@ class Secrets(SecretsBase):
         """
         Load upstream secret resource, replacing local secrets
         """
+        logging.debug(f"GCP _load_secrets")
         secret_path = f"projects/{self._project}/secrets/{self.secret}/versions/{self._version or 'latest'}"
         secrets = {}
         if self.create_if_not_present and not self._secret_exists:
             self._create_secret_resource()
-
         try:
             x = self.client.access_secret_version(secret_path)
         except:
@@ -116,6 +113,7 @@ class Secrets(SecretsBase):
         """
         Create the secret resource which will hold versions of secrets. A secret resource on its own has no secret data.
         """
+        logging.debug(f"GCP _create_secret_resource")
         try:
             self.client.create_secret(
                 self.client.project_path(self.project),
@@ -130,6 +128,7 @@ class Secrets(SecretsBase):
         """
         Commit the current state of self._secrets to a new secret version
         """
+        logging.debug(f"GCP update")
         j_blob = json.dumps(self._encoded_secrets).encode("UTF-8")
         resp = self.client.add_secret_version(
             self.client.secret_path(self.project, self.secret), {"data": j_blob}

@@ -73,10 +73,10 @@ class SecretsBase:
         The key/val here aren't the key/val of secretmanager, they're a key/val within a given secret val.
         """
         if type(val) != str:
-            logging.warn("Warning, value is not a string so serializing as json")
+            logging.warning("Warning, value is not a string so serializing as json")
             val = json.dumps(val)
         if key in self._secrets:
-            logging.warn("Warning, you are overwriting an existing key")
+            logging.warning("Warning, you are overwriting an existing key")
         self._secrets[key] = val
         self._encoded_secrets[key] = base64.b64encode(bytes(val, "utf-8")).decode(
             "ascii"
