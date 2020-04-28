@@ -2,26 +2,39 @@ language: python
 dist: xenial
 sudo: required
 python:
- - "3.7"
+ - "3.8"
 addons:
   apt:
-    sources: ['ubuntu-toolchain-r-test']
-    packages: ['bash', 'coreutils']
+    sources: [
+      'ubuntu-toolchain-r-test'
+    ]
+    packages: [
+      'bash',
+      'coreutils',
+    ]
 cache:
   directories:
     - /home/travis/.cache/pip
+env:
+  global:
+    # NOTE: This is a fix to get grpc to quiet down during
+    # the protocol buffer compilation.
+    # https://github.com/grpc/grpc/issues/19243#issuecomment-500792050
+    - GRPC_PYTHON_BUILD_SYSTEM_OPENSSL="false"
+    - GRPC_PYTHON_BUILD_SYSTEM_ZLIB="false"
+    - GRPC_PYTHON_BUILD_SYSTEM_CARES="false"
 before_install:
   - pip install pipenv==2018.11.26
 jobs:
   include:
-    - stage: Build 
-      script:     
+    - stage: Build
+      script:
         - python setup.py build
     - stage: Unit Tests
       script:
         - python setup.py test
-    - stage: Install 
-      script:    
+    - stage: Install
+      script:
         - python setup.py install
         - which cloud-secrets
         - python -c 'from cloudsecrets.gcp import Secrets'

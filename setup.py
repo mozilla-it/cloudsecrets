@@ -10,24 +10,15 @@ setup(
     author="Mozilla IT Service Engineering",
     author_email="afrank@mozilla.com",
     packages=find_packages(),
-    entry_points={
-        'console_scripts': [
-            'cloud-secrets=cloudsecrets.cli:main',
-        ],
-    },
+    entry_points={"console_scripts": ["cloud-secrets=cloudsecrets.cli:main",],},
     install_requires=[
-        'google-cloud-secret-manager',
-        'boto3'
+        "google-cloud-secret-manager",
+        "boto3",
+        # Google Cloud's Protocol Buffer requirement
+        # https://github.com/grpc/grpc/pull/18408/files#diff-b4ef698db8ca845e5845c4618278f29aR3
+        "cython>=0.29.8",
     ],
-    extras_require={
-        'test': [
-            'coverage',
-            'pytest'
-        ],
-    },
-    project_urls={
-        'Source': 'https://github.com/mozilla-it/cloudsecrets',
-    },
-    test_suite='tests.unit'
+    extras_require={"test": ["coverage", "pytest"],},
+    project_urls={"Source": "https://github.com/mozilla-it/cloudsecrets",},
+    test_suite="tests.unit",
 )
-
