@@ -12,6 +12,7 @@ cache:
     - /home/travis/.cache/pip
 before_install:
   - pip install pipenv==2018.11.26
+  - pip install tox
 jobs:
   include:
     - stage: Build
@@ -19,7 +20,7 @@ jobs:
         - python setup.py build
     - stage: Unit Tests
       script:
-        - python setup.py test
+        - tox
     - stage: Install
       script:
         - python setup.py install
