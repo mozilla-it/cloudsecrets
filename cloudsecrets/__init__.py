@@ -20,6 +20,9 @@ class SecretsBase:
             self._polling_interval <= 0 or not self._version
         ), "Cannot use a non-latest secret version with polling"
 
+    def __del__(self):
+        self._timer = None
+
     @property
     def secrets(self) -> dict:
         return self._secrets
@@ -106,3 +109,6 @@ class SecretsBase:
             # what was provided wasn't a number, so just attempt to use it.
             self._version = version
         self._load_secrets()
+
+    def delete(self) -> None:
+        pass
