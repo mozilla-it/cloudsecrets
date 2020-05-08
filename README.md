@@ -134,3 +134,4 @@ $ cloud-secrets -E -p GCP -g dp2-stage -s afrank-secrets -k YETANOTHER -v SECRET
 $ cloud-secrets -D -p GCP -g dp2-stage -s afrank-secrets -k YETANOTHER
 SECRETVALUE
 ```
+
