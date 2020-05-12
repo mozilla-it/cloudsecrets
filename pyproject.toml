@@ -5,7 +5,7 @@ description = "Python tool for accessing mozilla cloud secrets"
 authors = ["Adam Frank <afrank@mozilla.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.4"
+python = ">=3.4"
 google-cloud-secret-manager = "*"
 boto3 = "*"
 simplejson = "*"
