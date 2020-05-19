@@ -48,6 +48,9 @@ class SecretsBase:
         else:
             self._load_secrets()
 
+    def get(self,*args,**kwargs):
+        return dict(self).get(*args,**kwargs)
+
     def _list_versions(self) -> list:
         return [self._version]
 
