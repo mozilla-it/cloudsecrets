@@ -1,18 +1,60 @@
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
 [tool.poetry]
 name = "cloudsecrets"
 version = "0.0.2"
 description = "Python tool for accessing mozilla cloud secrets"
 authors = ["Adam Frank <afrank@mozilla.com>"]
+repository = "https://github.com/mozilla-it/cloudsecrets"
+readme = "README.md"
+documentation = "https://mozilla-it.github.io/cloudsecrets"
 
 [tool.poetry.dependencies]
+# These packages are mandatory and form the core of this package’s distribution.
 python = ">=3.4"
 google-cloud-secret-manager = "*"
 boto3 = "*"
 simplejson = "*"
+moto = "*"
+# A list of all of the optional dependencies, some of which are included in the
+# below `extras`. They can be opted into by apps.
+coverage = {version="*", optional = true}
+pytest = {version="*", optional = true}
+nose = {version="*", optional = true}
+tox = "*"
 
 [tool.poetry.dev-dependencies]
-moto = "*"
+# These packages are handled by the tool.tox.
+pre-commit = "*"
 
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.poetry.extras]
+tests = ["tox","coverage", "pytest", "nose"]
+
+[tool.poetry.scripts]
+cloud-secrets = 'cloudsecrets.cli:main'
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py37
+
+[testenv]
+whitelist_externals =
+    poetry
+setenv =
+    AWS_ACCESS_KEY_ID=fake
+    AWS_SECRET_ACCESS_KEY=fake
+    BOTO_CONFIG=/dev/null
+deps =
+    coverage
+    nose
+    simplejson
+    moto
+    pytest
+    pytest-cov
+commands =
+    poetry run pytest tests/unit
+"""

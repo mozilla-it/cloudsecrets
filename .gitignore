@@ -5,6 +5,8 @@ __pycache__
 .eggs
 build
 venv
+dist
+.venv
 .tox
 
 # Unit Tests
