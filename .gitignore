@@ -17,3 +17,5 @@ test-secrets.json
 
 # PyCharm
 .idea
+
+poetry.lock
