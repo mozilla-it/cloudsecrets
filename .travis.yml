@@ -12,9 +12,10 @@ cache:
     - /home/travis/.cache/pip
 before_install:
   - pip install poetry
+  - pip install tox-travis
 install:
   - poetry config virtualenvs.create false
-  - poetry install --no-ansi --no-root
+  - poetry install --no-ansi --no-root -v
 jobs:
   include:
     - stage: Build
@@ -22,7 +23,7 @@ jobs:
         - poetry build
     - stage: Unit Tests
       script:
-        - poetry run tox
+        - tox
     - stage: Install
       script:
         - which cloud-secrets
