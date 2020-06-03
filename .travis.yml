@@ -11,18 +11,18 @@ cache:
   directories:
     - /home/travis/.cache/pip
 before_install:
-  - pip install pipenv==2018.11.26
-  - pip install tox
+  - pip install poetry
 jobs:
   include:
     - stage: Build
       script:
-        - python setup.py build
+        - poetry build
     - stage: Unit Tests
       script:
-        - tox
+        - poetry run tox
     - stage: Install
       script:
-        - python setup.py install
+        - poetry config virtualenvs.create false
+        - poetry install --no-ansi
         - which cloud-secrets
         - python -c 'from cloudsecrets.gcp import Secrets'
