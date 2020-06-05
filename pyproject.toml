@@ -13,24 +13,20 @@ documentation = "https://mozilla-it.github.io/cloudsecrets"
 
 [tool.poetry.dependencies]
 # These packages are mandatory and form the core of this package’s distribution.
-python = ">=3.4"
+python = ">=3.7"
 google-cloud-secret-manager = "*"
 boto3 = "*"
 simplejson = "*"
-moto = "*"
-# A list of all of the optional dependencies, some of which are included in the
-# below `extras`. They can be opted into by apps.
-coverage = {version="*", optional = true}
-pytest = {version="*", optional = true}
-nose = {version="*", optional = true}
-tox = "*"
 
 [tool.poetry.dev-dependencies]
-# These packages are handled by the tool.tox.
+moto = "*"
 pre-commit = "*"
+tox = "*"
+coverage = "*"
+pytest = "*"
+pytest-cov = "*"
+nose = "*"
 
-[tool.poetry.extras]
-tests = ["tox","coverage", "pytest", "nose"]
 
 [tool.poetry.scripts]
 cloud-secrets = 'cloudsecrets.cli:main'
@@ -48,13 +44,6 @@ setenv =
     AWS_ACCESS_KEY_ID=fake
     AWS_SECRET_ACCESS_KEY=fake
     BOTO_CONFIG=/dev/null
-deps =
-    coverage
-    nose
-    simplejson
-    moto
-    pytest
-    pytest-cov
 commands =
     poetry run pytest tests/unit
 """

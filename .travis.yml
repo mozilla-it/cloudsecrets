@@ -12,17 +12,18 @@ cache:
     - /home/travis/.cache/pip
 before_install:
   - pip install poetry
-  - pip install tox
 jobs:
   include:
     - stage: Build
       script:
         - poetry build
-    - stage: Unit Tests
-      script:
-        - tox
-    - stage: Install
+    - stage: Poetry Install
       script:
         - poetry install
+    - stage: Unit Tests
+      script:
+        - poetry run tox
+    - stage: Install
+      script:
         - which cloud-secrets
         - python -c 'from cloudsecrets.gcp import Secrets'
