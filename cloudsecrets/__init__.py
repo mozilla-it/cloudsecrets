@@ -51,6 +51,9 @@ class SecretsBase:
     def get(self,*args,**kwargs):
         return dict(self).get(*args,**kwargs)
 
+    def _keys(self):
+        return dict(self).keys()
+
     def _list_versions(self) -> list:
         return [self._version]
 
