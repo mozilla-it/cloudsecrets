@@ -13,6 +13,9 @@ simplejson = "*"
 [tool.poetry.dev-dependencies]
 moto = "*"
 
+[tool.poetry.scripts]
+cloud-secrets = "cloudsecrets.cli:main"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
