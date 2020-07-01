@@ -21,13 +21,13 @@ class TestAWSLibrary(unittest.TestCase):
 
     @mock_secretsmanager
     def test_create_secret(self):
-        secrets = Secrets(self.secret_name, connection=self.connection)
+        secrets = Secrets(self.secret_name, connection=self.connection, is_binary=True)
         secrets.set(self.secret_key, self.secret_value)
         assert dict(secrets).get(self.secret_key) == self.secret_value
 
     @mock_secretsmanager
     def test_unset_secrets(self):
-        secrets = Secrets(self.secret_name, connection=self.connection)
+        secrets = Secrets(self.secret_name, connection=self.connection, is_binary=True)
         secrets.set(self.secret_key, self.secret_value)
         secrets.unset(self.secret_key)
         assert dict(secrets).get(self.secret_key) is None
@@ -35,7 +35,7 @@ class TestAWSLibrary(unittest.TestCase):
     @mock_secretsmanager
     def test_delete_secret(self):
         self.connection.create_secret(Name="test-secret", SecretBinary=b("{}"))
-        secrets = Secrets("test-secret", connection=self.connection)
+        secrets = Secrets("test-secret", connection=self.connection, is_binary=True)
         secrets.delete()
         from botocore.exceptions import ClientError
 
