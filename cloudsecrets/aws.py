@@ -1,6 +1,5 @@
 import base64
 import logging
-import os
 
 import boto3
 import simplejson as json
@@ -26,10 +25,6 @@ class Secrets(SecretsBase):
       "creds.json": "ewogICAgImJsb2IiOiAiaGVyZSBpcyBzb21lIHN0dWZmIgp9Cg=="
     }
 
-    Project must be specified, either as a keyword argument or env var.
-    Supported env vars are PROJECT, GOOGLE_CLOUD_PROJECT, GCP_PROJECT, GCLOUD_PROJECT
-    >>> os.environ['PROJECT'] = "my-project"
-
     If a secret is specified which does not exist, one will be created unless
     create_if_not_present is set to False
     >>> s = Secrets("my-secrets")
@@ -46,7 +41,7 @@ class Secrets(SecretsBase):
     def __init__(self, secret, connection=None, region=None, **kwargs) -> None:
         logging.debug(f"AWS __init__ ({secret, region})")
         super().__init__(secret, **kwargs)
-        self.is_binary = kwargs.get("is_binary", True)
+        self.is_binary = kwargs.get("SecretBinary", False)
         if connection is None:
             self.connection = boto3.client("secretsmanager", region_name=region)
         else:
