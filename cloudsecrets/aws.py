@@ -41,7 +41,7 @@ class Secrets(SecretsBase):
     def __init__(self, secret, connection=None, region=None, **kwargs) -> None:
         logging.debug(f"AWS __init__ ({secret, region})")
         super().__init__(secret, **kwargs)
-        self.is_binary = kwargs.get("SecretBinary", False)
+        self.is_binary = kwargs.get("is_binary", False)
         if connection is None:
             self.connection = boto3.client("secretsmanager", region_name=region)
         else:
