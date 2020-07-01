@@ -48,8 +48,8 @@ class SecretsBase:
         else:
             self._load_secrets()
 
-    def get(self,*args,**kwargs):
-        return dict(self).get(*args,**kwargs)
+    def get(self, *args, **kwargs):
+        return dict(self).get(*args, **kwargs)
 
     def _keys(self):
         return dict(self).keys()
@@ -81,15 +81,29 @@ class SecretsBase:
         """
         The key/val here aren't the key/val of secretmanager, they're a key/val within a given secret val.
         """
-        if type(val) != str:
-            logging.warning("Warning, value is not a string so serializing as json")
-            val = json.dumps(val)
         if key in self._secrets:
             logging.warning("Warning, you are overwriting an existing key")
-        self._secrets[key] = val
-        self._encoded_secrets[key] = base64.b64encode(bytes(val, "utf-8")).decode(
-            "ascii"
-        )
+        if type(val) != str and key is not None:
+            logging.warning("Warning, value is not a string so serializing as json")
+            val = json.dumps(val)
+        if key is None:
+            # Handling multiple keys from JSON file
+            try:
+                values = json.loads(open(os.path.expanduser(val)).read())
+            except Exception as e:
+                logging.error(f"Failed to parse JSON file: {e}")
+                raise
+
+            for k, v in values.items():
+                self._secrets[k] = v
+                self._encoded_secrets[k] = base64.b64encode(bytes(v, "utf-8")).decode(
+                    "ascii"
+                )
+        else:
+            self._secrets[key] = val
+            self._encoded_secrets[key] = base64.b64encode(bytes(val, "utf-8")).decode(
+                "ascii"
+            )
         self.update()
 
     def unset(self, key) -> None:

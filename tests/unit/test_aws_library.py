@@ -1,5 +1,6 @@
 import json
 import unittest
+import os
 
 import boto3
 import simplejson
@@ -91,3 +92,11 @@ class TestAWSLibrary(unittest.TestCase):
             "super-secret", connection=self.connection, create_if_not_present=True
         )
         assert secrets.secrets == dict()
+
+    @mock_secretsmanager
+    def test_create_secret_values_from_file(self):
+        secret_values_file = "test-secrets-file.json"
+        values = json.loads(open(os.path.expanduser(secret_values_file)).read())
+        secrets = Secrets(self.secret_name, connection=self.connection)
+        secrets.set(None, secret_values_file)
+        assert dict(secrets) == values

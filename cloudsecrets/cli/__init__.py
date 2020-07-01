@@ -107,6 +107,8 @@ def main():
                 "Must provide an encryption input value. b64value|value|file"
             )
         s.set(args.key, val)
+    elif args.encrypt and args.file:
+        s.set(None, args.file)
     elif args.encrypt:
         # add or replace and entire secret
         raise NotImplementedError
