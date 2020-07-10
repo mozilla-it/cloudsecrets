@@ -5,4 +5,4 @@ WORKDIR /app
 
 COPY . /app
 
-RUN python setup.py build test install
+RUN pip3 install . && tox
