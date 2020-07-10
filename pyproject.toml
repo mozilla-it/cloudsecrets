@@ -9,9 +9,11 @@ python = ">=3.4"
 google-cloud-secret-manager = "*"
 boto3 = "*"
 simplejson = "*"
+tox = "*"
 
 [tool.poetry.dev-dependencies]
 moto = "*"
+nose = "*"
 
 [tool.poetry.scripts]
 cloud-secrets = "cloudsecrets.cli:main"

@@ -13,6 +13,7 @@ class TestAWSLibrary(unittest.TestCase):
     from moto import mock_secretsmanager
 
     @classmethod
+    @mock_secretsmanager
     def setUpClass(self):
         self.secret_name = "FAKE_SECRET_NAME"
         self.secret_key = "FAKE"
