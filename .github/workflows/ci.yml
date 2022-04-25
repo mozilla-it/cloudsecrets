@@ -1,0 +1,30 @@
+name: CI (Python)
+
+on: [ push ]
+
+jobs:
+  build-and-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Install Tox and any other packages
+        run: pip install tox pipenv==2018.11.26
+
+      - name: Build
+        run: python setup.py build
+
+      - name: Run Tox
+        run: tox
+
+      - name: Install
+        run: |
+          python setup.py install
+          which cloud-secrets
